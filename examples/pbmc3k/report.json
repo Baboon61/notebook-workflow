@@ -1,0 +1,67 @@
+{
+  "code_cells": 1,
+  "control_trace_tokens": 765,
+  "dataset": {
+    "cells": 2700,
+    "file_bytes": 5855727,
+    "file_sha256": "89a96f1beaa2dd83a687666d3f19a4513ac27a2a2d12581fcd77afed7ea653a1",
+    "genes": 32738,
+    "loader": "scanpy.datasets.pbmc3k()",
+    "median_detected_genes": 817.0,
+    "median_mito_percent": 2.02963924407959,
+    "median_umis": 2197.0,
+    "url": "https://exampledata.scverse.org/scanpy/pbmc3k_raw.h5ad"
+  },
+  "edit_request": "Change the RNA-count histogram from 40 to 60 bins. Preserve all QC calculations and the scatter plot.",
+  "encoding": "o200k_base",
+  "inline_png_bytes_before": 68397,
+  "inline_png_count_before": 1,
+  "kernel": "python3",
+  "measured_at_utc": "2026-10-14T13:05:46.311814+00:00",
+  "measurement": "Concatenated input text, not billed requests or total conversation tokens. Control paths are normalized; no model call is made by this helper.",
+  "notebook_bytes_before": 94376,
+  "notebook_has_regenerated_outputs": true,
+  "qc_values_unchanged": true,
+  "reduction_percent_including_overhead": 95.30908207080937,
+  "script_bytes_before": 2347,
+  "skill_instructions_tokens": 1420,
+  "tokens": {
+    "cell_source_and_request": 491,
+    "notebook_and_request": 61715,
+    "script_and_request": 710,
+    "skill_including_overhead": 2895
+  },
+  "tokens_saved_including_overhead": 58820,
+  "versions": {
+    "anndata": "0.13.4",
+    "ipykernel": "7.4.0",
+    "jupytext": "1.19.6",
+    "matplotlib": "3.11.2",
+    "nbclient": "0.11.0",
+    "nbformat": "5.11.1",
+    "notebook-workflow": "0.4.0",
+    "numpy": "2.5.4",
+    "python": "3.14.6",
+    "scanpy": "1.12.4",
+    "scipy": "1.18.1",
+    "tiktoken": "0.14.0"
+  },
+  "workflow": {
+    "changed": [
+      1
+    ],
+    "dependency_fallback": [
+      1
+    ],
+    "dependency_warnings": [
+      {
+        "cell": 1,
+        "reason": "Control flow may conditionally redefine notebook variables."
+      }
+    ],
+    "dependents_cleared": [],
+    "outputs_cleared": [
+      1
+    ]
+  }
+}

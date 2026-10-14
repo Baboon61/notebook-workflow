@@ -1,0 +1,1 @@
+Change the RNA-count histogram from 40 to 60 bins. Preserve all QC calculations and the scatter plot.
