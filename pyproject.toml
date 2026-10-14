@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "notebook-workflow"
+version = "0.4.0"
+description = "Apply AI edits from output-free Python/R scripts to saved Jupyter notebooks."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+dependencies = ["jupytext>=1.16,<2", "nbformat>=5.10,<6"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4,<10", "tomli>=2; python_version < '3.11'"]
+
+[project.scripts]
+notebook-workflow = "notebook_workflow.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

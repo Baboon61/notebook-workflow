@@ -1,0 +1,9 @@
+include LICENSE README.md AGENTS.md install.py
+recursive-include docs *.md
+recursive-include agents *.toml
+recursive-include skills/notebook-refactor *.md *.yaml *.py
+recursive-include scripts *.py
+recursive-include vscode *.json *.js *.md
+recursive-include examples *.py *.R
+global-exclude .DS_Store *.py[cod]
+exclude skills/notebook-refactor/tooling.json

@@ -1,0 +1,12 @@
+name = "architecture_analyzer"
+description = "Map requested notebook code extraction into the project's existing structure."
+sandbox_mode = "read-only"
+developer_instructions = """
+Use the exported notebook script and relevant source files to decide module placement.
+Run only when the user request calls for extraction or architectural changes.
+Follow the current project's established language, package, and directory conventions.
+Python and R are supported without prescribing a package layout or scientific libraries.
+Preserve object mutation and global-state semantics in recommendations.
+Do not read notebook JSON, backups, or baselines. Do not modify files or execute notebooks.
+Follow project Git permissions.
+"""

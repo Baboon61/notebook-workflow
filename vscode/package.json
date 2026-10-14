@@ -1,0 +1,36 @@
+{
+  "name": "notebook-workflow",
+  "displayName": "Notebook Workflow",
+  "description": "Save and refresh local Python/R notebooks during AI assistance through lightweight scripts.",
+  "version": "0.4.0",
+  "publisher": "local-notebook-tools",
+  "license": "MIT",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Notebooks"],
+  "main": "./extension.js",
+  "extensionKind": ["ui"],
+  "activationEvents": ["onStartupFinished"],
+  "capabilities": { "untrustedWorkspaces": { "supported": false }, "virtualWorkspaces": false },
+  "contributes": {
+    "commands": [
+      { "command": "notebookWorkflow.prepare", "title": "Notebook Workflow: Prepare Active Notebook for AI" },
+      { "command": "notebookWorkflow.apply", "title": "Notebook Workflow: Apply AI Script Changes" },
+      { "command": "notebookWorkflow.review", "title": "Notebook Workflow: Review AI Script Changes" },
+      { "command": "notebookWorkflow.resume", "title": "Notebook Workflow: Resume Unfinished Session" },
+      { "command": "notebookWorkflow.restore", "title": "Notebook Workflow: Restore Original Notebook" },
+      { "command": "notebookWorkflow.abort", "title": "Notebook Workflow: Close Unfinished Session" },
+      { "command": "notebookWorkflow.refresh", "title": "Notebook Workflow: Retry Notebook Refresh" },
+      { "command": "notebookWorkflow.status", "title": "Notebook Workflow: Show Local Bridge Status" }
+    ],
+    "configuration": {
+      "title": "Notebook Workflow",
+      "properties": {
+        "notebookWorkflow.pythonPath": {
+          "type": "string", "default": "", "scope": "machine",
+          "description": "Python from the isolated local notebook-workflow tooling environment. Empty uses the standard user installation."
+        }
+      }
+    }
+  },
+  "scripts": { "test": "node --test tests/*.test.js" }
+}

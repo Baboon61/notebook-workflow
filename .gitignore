@@ -1,0 +1,30 @@
+# Local environments and generated Python files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# Local editor/system files
+.DS_Store
+.idea/
+.vscode/
+
+# Extension packages and local launcher configuration
+*.vsix
+skills/notebook-refactor/tooling.json
+
+# Notebook recovery artifacts and generated examples
+notebook-workflow-sessions/
+.notebook-workflow/
+notebook-workflow-benchmarks/
+.ipynb_checkpoints/
+examples/*.ipynb
+
+# Local handoff contains personal installation paths
+NOTEBOOK_WORKFLOW_HANDOFF.md

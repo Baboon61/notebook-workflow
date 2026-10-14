@@ -1,0 +1,6 @@
+interface:
+  display_name: "Notebook Assistance"
+  short_description: "Edit Python/R notebooks through lightweight scripts"
+  default_prompt: "Use $notebook-refactor to update my saved notebook through a lightweight script and apply the edits back."
+policy:
+  allow_implicit_invocation: true
