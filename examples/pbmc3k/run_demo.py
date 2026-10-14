@@ -54,6 +54,7 @@ def tokenizer(output):
 
 def execute_notebook(path, output):
     """Use this interpreter via a temporary kernel spec, without global kernel changes."""
+    from ipykernel.kernelspec import get_kernel_dict
     from jupyter_client import KernelManager
     from jupyter_client.kernelspec import KernelSpecManager
     from nbclient import NotebookClient
@@ -61,11 +62,11 @@ def execute_notebook(path, output):
     kernels = output / "kernel-specs"
     spec = kernels / "python3"
     spec.mkdir(parents=True, exist_ok=True)
-    write_json(spec / "kernel.json", {
-        "argv": [sys.executable, "-m", "ipykernel_launcher", "-f", "{connection_file}"],
-        "display_name": "PBMC3k demo", "language": "python",
-    })
+    kernel_spec = get_kernel_dict()  # Uses this process's sys.executable.
+    kernel_spec["display_name"] = "PBMC3k demo"
+    write_json(spec / "kernel.json", kernel_spec)
     manager = KernelManager(kernel_name="python3", connection_file=str(output / "kernel-connection.json"),
+                            transport_encryption="required",
                             kernel_spec_manager=KernelSpecManager(kernel_dirs=[str(kernels)]))
     environment = dict(os.environ)
     environment.update({"MPLCONFIGDIR": str(output / "matplotlib-cache"),
@@ -74,8 +75,9 @@ def execute_notebook(path, output):
                         "OPENBLAS_NUM_THREADS": "1", "OMP_NUM_THREADS": "1",
                         "NUMBA_NUM_THREADS": "1"})
     notebook = nbformat.read(path, as_version=4)
+    # A supplied manager is caller-owned; explicitly clean it up after this run.
     NotebookClient(notebook, km=manager, timeout=120, record_timing=False,
-                   resources={"metadata": {"path": str(output)}}).execute(env=environment)
+                   resources={"metadata": {"path": str(output)}}).execute(env=environment, cleanup_kc=True)
     nbformat.write(notebook, path)
     return notebook
 
@@ -142,6 +144,118 @@ def normalize_trace(events, output):
     return text
 
 
+def write_markdown_report(output, result, *, figures_directory="."):
+    """Write a readable summary from the same measurements as report.json."""
+    tokens = result["tokens"]
+    data = result["dataset"]
+    changes = result["workflow"]
+    figures = Path(figures_directory)
+
+    def cells(values):
+        return ", ".join(str(value) for value in values) or "None"
+
+    warnings = "\n".join(f"- Cell {item['cell']}: {item['reason']}"
+                         for item in changes["dependency_warnings"]) or "None."
+    versions = "\n".join(f"| {name} | {value} |" for name, value in result["versions"].items())
+    status = "Passed" if (result["qc_values_unchanged"] and
+                          result["notebook_has_regenerated_outputs"]) else "Failed"
+    text = f"""# PBMC3k execution results
+
+**Verification: {status}.** Measured at {result['measured_at_utc']} (UTC).
+
+The demo uses {data['cells']:,} cells and {data['genes']:,} genes from
+`scanpy.datasets.pbmc3k()`. The edit changes the RNA-count histogram from
+40 to 60 bins. The notebook runs before and after applying the edit.
+
+## Token comparison
+
+| Input text | Tokens |
+| --- | ---: |
+| Full saved notebook + request, without the skill | {tokens['notebook_and_request']:,} |
+| Exported script + request | {tokens['script_and_request']:,} |
+| Skill workflow, including instructions and command/response summaries | {tokens['skill_including_overhead']:,} |
+| Cell source + request, for an assistant that already extracts source | {tokens['cell_source_and_request']:,} |
+
+**{result['tokens_saved_including_overhead']:,} fewer input-text tokens
+({result['reduction_percent_including_overhead']:.2f}% reduction)** compared
+with reading the full saved notebook, including the skill's overhead.
+
+Encoding: `{result['encoding']}`. Skill instructions: {result['skill_instructions_tokens']:,}
+tokens; command/response text: {result['control_trace_tokens']:,} tokens.
+Original notebook: {result['notebook_bytes_before']:,} bytes; exported script:
+{result['script_bytes_before']:,} bytes. The notebook contains
+{result['inline_png_count_before']} real inline PNG ({result['inline_png_bytes_before']:,} bytes).
+
+These are concatenated input-text payload counts, not billed model usage or
+total conversation tokens. The replay command makes no model call. Command paths and session
+directory names are normalized; rendering, download messages, paths, and generated
+cell labels can change counts. An assistant that already reads only source starts
+with the smaller source-only baseline above; this percentage saving does not apply
+to that baseline.
+
+## Edit and execution checks
+
+Requested edit:
+
+> {result['edit_request']}
+
+| Check | Result |
+| --- | --- |
+| Edited cells | {cells(changes['changed'])} |
+| Cells whose old outputs were cleared | {cells(changes['outputs_cleared'])} |
+| Additional dependent cells cleared | {cells(changes['dependents_cleared'])} |
+| Cells flagged by conservative dependency analysis | {cells(changes['dependency_fallback'])} |
+| QC summary values unchanged after rerunning | {'Yes' if result['qc_values_unchanged'] else 'No'} |
+| Inline figure regenerated | {'Yes' if result['notebook_has_regenerated_outputs'] else 'No'} |
+
+Before writing this report, the runner checks that only `bins=40` changes to
+`bins=60`, cell IDs and notebook metadata are preserved, and the old outputs
+and execution count are cleared before rerunning.
+
+Dependency warnings:
+
+{warnings}
+
+A dependency warning records uncertainty in static analysis, rather than an
+execution failure. This one-cell demo has no later cells to clear.
+
+## QC summary before and after
+
+| Metric | Value |
+| --- | ---: |
+| Cells | {data['cells']:,} |
+| Genes | {data['genes']:,} |
+| Median RNA counts | {data['median_umis']:,.0f} UMIs |
+| Median detected genes | {data['median_detected_genes']:,.0f} |
+| Median mitochondrial RNA | {data['median_mito_percent']:.6f}% |
+
+## Figures
+
+Before: 40 histogram bins.
+
+![PBMC3k QC before the edit, with a 40-bin histogram.]({(figures / 'qc-before.png').as_posix()})
+
+After: 60 histogram bins, with unchanged QC values and scatter plot.
+
+![PBMC3k QC after the edit, with a 60-bin histogram.]({(figures / 'qc-after.png').as_posix()})
+
+## Dataset and environment
+
+Dataset download: [{data['url']}]({data['url']}).
+SHA-256: `{data['file_sha256']}`. Download size: {data['file_bytes']:,} bytes.
+
+| Package | Version |
+| --- | --- |
+{versions}
+
+The [JSON report](report.json) contains the same measurements in machine-readable
+form. This Markdown file links to figures and does not embed dataset contents.
+"""
+    path = output / "report.md"
+    path.write_text(text, encoding="utf-8")
+    return path
+
+
 def report(output):
     session = Path(json.loads((output / "active-session.json").read_text())["session"])
     events = [json.loads(line) for line in (output / "workflow-trace.jsonl").read_text().splitlines()]
@@ -206,7 +320,9 @@ def report(output):
     result["notebook_has_regenerated_outputs"] = any("image/png" in item.get("data", {}) for item in rerun.cells[0].outputs)
     if not result["notebook_has_regenerated_outputs"]:
         raise ValueError("The rerun did not store its figure in the notebook.")
+    result["markdown_report"] = str(output / "report.md")
     write_json(output / "report.json", result)
+    write_markdown_report(output, result)
     return result
 
 

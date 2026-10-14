@@ -82,8 +82,8 @@ Build a Python source archive and CLI wheel, plus the local extension:
 `MANIFEST.in` includes the installer, skill, agents, editor integration,
 documentation, tests, and examples in the source archive. The wheel provides the
 Python CLI package. The VSIX contains only the extension's maintained runtime
-files, README, and MIT license. Local configuration, backups, caches, and the private handoff
-are excluded. Building packages does not install or publish them.
+files, README, and MIT license. Local configuration, backups, and caches are
+excluded. Building packages does not install or publish them.
 
 GitHub Actions is configured for Python 3.10 and 3.14 on Linux/macOS, a Node bridge
 job, and a packaging job. The GUI pilot runs locally. A configured workflow is not

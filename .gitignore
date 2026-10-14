@@ -28,6 +28,3 @@ notebook-workflow-benchmarks/
 examples/*.ipynb
 examples/pbmc3k/data/
 examples/pbmc3k/outputs/
-
-# Local handoff contains personal installation paths
-NOTEBOOK_WORKFLOW_HANDOFF.md

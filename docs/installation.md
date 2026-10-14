@@ -49,6 +49,40 @@ Install the Python tool first, make the `code` command available on PATH, then r
 python3 install.py --vscode-only
 ```
 
+This command installs **one bundled extension**:
+**Notebook Workflow**, ID `local-notebook-tools.notebook-workflow`. It builds a
+temporary VSIX from this repository's `vscode/` directory, invokes
+`code --install-extension <temporary-vsix>`, and removes the temporary package
+after installation. VS Code retains the installed copy in its user extension
+directory. For standard desktop VS Code, the defaults are:
+
+| Platform | Extension directory |
+| --- | --- |
+| macOS/Linux | `~/.vscode/extensions/` |
+| Windows | `%USERPROFILE%\.vscode\extensions\` |
+
+The selected `code` installation and any custom extension-directory configuration
+determine the actual location. The extension runs in the local UI host; it is
+not installed into your analysis environment or a remote Jupyter server.
+Updating the bundled source requires reinstalling the VSIX to update that copy.
+
+The command does not install Jupyter (`ms-toolsai.jupyter`), Python
+(`ms-python.python`), or Codex (`openai.chatgpt`). Install Jupyter separately to
+edit and execute notebooks in VS Code, Python for Python development/interpreter
+support, and Codex if using the assistant through its VS Code extension.
+An existing Jupyter kernel supplies your Python or R analysis environment.
+
+Inspect installed IDs and versions without changing anything:
+
+```bash
+code --list-extensions --show-versions
+```
+
+Look for `local-notebook-tools.notebook-workflow@<version>` in that list or
+**Notebook Workflow** in the Extensions view. The initial `python3 install.py`
+command installs the tool, skill links, and optional agent links listed above;
+it installs no VS Code extensions.
+
 Reload VS Code and open a saved local notebook in a trusted workspace. The bridge
 saves before export and verifies refresh after apply. Your existing local or
 remote kernel remains responsible for executing cells.

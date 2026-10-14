@@ -56,7 +56,7 @@ saving does not apply to it.
 ![PBMC3k QC after changing to 60 histogram bins: RNA-count distribution and detected genes versus RNA counts, colored by mitochondrial RNA percentage.](examples/pbmc3k/figures/qc-after.png)
 
 See the [before figure](examples/pbmc3k/figures/qc-before.png),
-[recorded measurements](examples/pbmc3k/report.json), and
+[readable results](examples/pbmc3k/report.md), and
 [benchmark method](docs/pbmc3k-demo.md#what-the-token-counts-measure).
 
 ### Reproduce the example
@@ -74,6 +74,12 @@ fixed edit, reruns the edited cell, and writes figures and token counts under
 `notebook-workflow-benchmarks/pbmc3k/`. That folder is ignored; the dataset and
 executed notebooks are kept out of the repository. Replay makes no model call.
 Counts vary with rendering, first-download messages, paths, and generated cell labels.
+
+After replay finishes, open **`notebook-workflow-benchmarks/pbmc3k/report.md`**
+and use VS Code's **Markdown: Open Preview** command. It shows your run's token
+comparison, QC values, edit checks, dependency warnings, and before/after figures.
+`report.json` contains the same measurements for scripts. A custom `--output`
+directory receives both reports in that directory.
 
 For another run, add `--output notebook-workflow-benchmarks/pbmc3k-rerun` before
 `replay`. To try the edit with Codex yourself, follow the
@@ -125,6 +131,44 @@ python3 install.py --vscode-only
 The second command requires the VS Code `code` command on PATH. Reload VS Code
 and restart Codex if the skill has not appeared. Open a saved Python or R notebook
 and ask for help using `$notebook-refactor`, as in the example above.
+
+### What gets installed, and where
+
+The two commands install different components:
+
+| Command | Component | Default destination |
+| --- | --- | --- |
+| `python3 install.py` | Isolated Python tool, Jupytext, and nbformat | `~/.local/share/notebook-workflow/venv/` |
+| `python3 install.py` | Skill discovery links | `~/.agents/skills/notebook-refactor` and `~/.codex/skills/notebook-refactor` |
+| `python3 install.py` | Four custom agent definitions (use is optional) | `~/.codex/agents/*.toml` |
+| `python3 install.py --vscode-only` | **Notebook Workflow** VS Code extension (`local-notebook-tools.notebook-workflow`) | Your local VS Code user extension directory |
+
+The first command also records the tooling interpreter in
+`skills/notebook-refactor/tooling.json` inside this repository. Skill and agent
+links point back to this source folder, so keep it in place. `CODEX_HOME` and the
+installer's destination options can change the default Codex paths.
+
+The agent files are `architecture-analyzer.toml`, `notebook-analyzer.toml`,
+`notebook-refactorer.toml`, and `notebook-verifier.toml`.
+
+The VS Code command builds a temporary VSIX from the bundled [`vscode/`](vscode/)
+source and installs a copy through your `code` CLI. For standard desktop VS Code,
+extensions normally live under **`~/.vscode/extensions/`** on macOS/Linux or
+**`%USERPROFILE%\.vscode\extensions\`** on Windows. The bridge runs in your local
+VS Code window and saves/refreshes notebooks around edits; it executes no cells.
+
+**Only the Notebook Workflow extension is installed by this repository.** These
+separate extensions may be needed for your chosen setup:
+
+| Extension | Purpose | Installation |
+| --- | --- | --- |
+| [Jupyter](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter) (`ms-toolsai.jupyter`) | Open and run Jupyter notebooks in VS Code | Install separately for notebook editing/execution |
+| [Python](https://marketplace.visualstudio.com/items?itemName=ms-python.python) (`ms-python.python`) | Python interpreter selection and development support | Install separately for Python workflows |
+| [Codex](https://marketplace.visualstudio.com/items?itemName=openai.chatgpt) (`openai.chatgpt`) | Use the Codex assistant inside VS Code | Install separately if using Codex in VS Code; another Codex client can also use the skill |
+
+Check extension IDs and versions with `code --list-extensions --show-versions`,
+or find **Notebook Workflow** in VS Code's Extensions view. The
+[installation guide](docs/installation.md) covers custom paths and manual use.
 
 Locally stored notebooks can use local or remote kernels. The editor integration
 has been validated on macOS; see the [installation guide](docs/installation.md)

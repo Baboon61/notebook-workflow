@@ -49,7 +49,9 @@ On Windows, use `.venv-pbmc3k\Scripts\python.exe` in place of
 `.venv-pbmc3k/bin/python`.
 
 The runner uses this interpreter through a temporary kernel specification;
-it does not register or replace a global Jupyter kernel. The first run needs
+it does not register or replace a global Jupyter kernel. Kernel communication
+is encrypted, and each temporary kernel is shut down after execution, including
+when a cell fails. The first run needs
 internet access for the dataset and tokenizer vocabulary. It executes the small
 notebook twice: before the edit and after applying it.
 
@@ -64,10 +66,17 @@ Results are written into the ignored `notebook-workflow-benchmarks/pbmc3k/`:
 | --- | --- |
 | `pbmc3k.ipynb` | Executed notebook after the 60-bin edit |
 | `qc-before.png`, `qc-after.png` | Real before/after figures |
+| `report.md` | Readable execution summary with token counts, checks, QC values, and figures |
 | `report.json` | Token counts, versions, dataset hash, and verification results |
 | `data/pbmc3k_raw.h5ad` | Scanpy's downloaded dataset cache |
 | `workflow-trace.jsonl` | Actual launcher commands and compact responses |
 | `notebook-workflow-sessions/` | Exported script and retained recovery artifacts |
+
+Open **`report.md`** after replay and run VS Code's **Markdown: Open Preview**
+command to view the summary and its linked figures. The JSON printed in the
+terminal also identifies the Markdown report's path. With `--output`, both
+reports appear in your chosen directory. See the
+[recorded Markdown results](../examples/pbmc3k/report.md) for an example.
 
 Keep backups, baselines, and notebook JSON outside the assistant's context.
 The local measurement helper reads them privately and emits a compact report.
