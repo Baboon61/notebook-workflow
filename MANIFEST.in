@@ -5,5 +5,7 @@ recursive-include skills/notebook-refactor *.md *.yaml *.py
 recursive-include scripts *.py
 recursive-include vscode *.json *.js *.md
 recursive-include examples *.py *.R
+include examples/pbmc3k/requirements.txt examples/pbmc3k/request.txt examples/pbmc3k/report.json
+recursive-include examples/pbmc3k/figures *.png
 global-exclude .DS_Store *.py[cod]
 exclude skills/notebook-refactor/tooling.json

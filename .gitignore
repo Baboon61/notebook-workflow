@@ -1,5 +1,6 @@
 # Local environments and generated Python files
 .venv/
+.venv-pbmc3k/
 venv/
 __pycache__/
 *.py[cod]
@@ -25,6 +26,8 @@ notebook-workflow-sessions/
 notebook-workflow-benchmarks/
 .ipynb_checkpoints/
 examples/*.ipynb
+examples/pbmc3k/data/
+examples/pbmc3k/outputs/
 
 # Local handoff contains personal installation paths
 NOTEBOOK_WORKFLOW_HANDOFF.md
