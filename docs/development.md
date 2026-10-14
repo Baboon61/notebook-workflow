@@ -36,6 +36,23 @@ clearing, review, resume/reconnection, abort, refresh retry, exact restore, and
 dirty-buffer refusal for both languages. Remote-kernel connections are outside
 this pilot's coverage.
 
+## Try the examples
+
+The [Python example](../examples/python.py) and [R example](../examples/r.R) are
+small percent scripts with kernel metadata and no project dependencies. Convert
+them into notebooks from the repository root:
+
+```bash
+.venv/bin/jupytext --to notebook examples/python.py
+.venv/bin/jupytext --to notebook examples/r.R
+```
+
+Open either generated notebook in VS Code. Select a suitable kernel if you want
+to run its cells, then ask `$notebook-refactor` to change `value` from 1 to 2.
+The parameter, derived value, and display are affected; the final independent
+cell retains its state. Conversion itself needs no R runtime. Generated example
+notebooks are ignored; the percent scripts remain the maintained fixtures.
+
 ## Source layout
 
 | Path | Responsibility |
